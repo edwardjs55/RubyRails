@@ -1,0 +1,61 @@
+<h1>Listing <%= @dojos.length %> Dojos </h1>
+
+<% if flash[:notice] %>
+    <div class="notice"><%= flash[:notice] %></div>
+<% end %>
+
+<table id ="dojos">
+    <th>
+        <tr>            
+            <td>Branch</td>
+            <td>Street</td>
+            <td>City</td>
+            <td>State</td>
+            <td>Action</td>
+        </tr>
+    </th>
+    <tbody>
+        <% @dojos.each do |dojo| %>
+        <tr>
+            <td><%= dojo.branch %></td>
+            <td><%= dojo.street %></td>
+            <td><%= dojo.city %></td>
+            <td><%= dojo.state %></td>
+            <td>
+                <a href="dojos/<%=dojo.id %>">Show</a> |
+                <a href="dojos/<%=dojo.id %>/edit">Edit</a> |
+                <a href="dojos/<%=dojo.id %>" data-method="delete">Destroy</a>
+            </td>
+
+        </tr>
+        <% end %>
+    </tbody>
+</table>
+
+<a href="dojos/new"><button>New Dojo</button></a>
+
+<style>
+        #dojos {
+            font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        
+        #dojos td, #dojos th {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+        
+        #dojos tr:nth-child(even){background-color: #f2f2f2;}
+        
+        #dojos tr:hover {background-color: #ddd;}
+        
+        #dojos th {
+            padding-top: 12px;
+            padding-bottom: 12px;
+            text-align: left;
+            background-color: #4CAF50;
+            color: white;
+        }
+        </style>
+

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Exam 2</title>
+  </head>
+  <body>
+    <h3> Register below</h3>
+    <% if flash[:alert] %>
+    <% flash[:alert].each do |error| %>
+    <p><%= error %></p>
+    <% end %>
+    <% end %>
+  <form action="sessions/register" method="POST">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+    <label>Name: </label>
+    <input type="text" name="name" placeholder="Name">
+
+    <label>Email: </label>
+    <input type="text" name="email" placeholder="Email">
+
+    <label>Password: </label>
+    <input type="password" name="password"  placeholder= "Password">
+
+    <label>Password confirmation: </label>
+    <input type="password" name="confirm_password" placeholder = "Confirm password">
+
+    <input type="submit" name="register" value="register">
+  </form>
+
+  <h1>Login</h1>
+  <form action="sessions/login" method="POST">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+
+    <label>Email: </label>
+    <input type="text" name="email" placeholder="email">
+
+    <label>Password: </label>
+    <input type="password" name="password" placeholder = "Password">
+
+    <input type="submit" name="submit" placeholder="Login">
+  </body>
+</html>
