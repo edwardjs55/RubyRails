@@ -1,0 +1,27 @@
+    
+    <% session[:activities].reverse_each do |x| %>
+        <p> <%= x["message"] %> </p>
+        <% end %>
+
+
+        <!-- <% for i in session['log'] %>
+            <li class="<%= i[1] %>"><%=i[0]%></li>
+        <% end %> -->
+
+    
+    <div>
+        <ul>
+            {% for i in session['log']: %}
+
+            <li class="{{ i[1] }}">{{i[0]}}</li>
+            {% endfor %}
+        </ul>
+        {%if session['log']|length > 0%}
+        {% if session['log'][session['log']|length-1][1] == 'red' %}
+            <img src="{{ url_for('static',filename='sad.gif')}}">
+        {% endif%}
+        {% if session['log'][session['log']|length-1][1] == 'green'%}
+            <img src="{{ url_for('static',filename='happy.gif')}}">
+        {% endif %}
+        {% endif %}
+    </div>

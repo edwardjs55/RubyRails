@@ -1,0 +1,56 @@
+// Place all the styles related to the Rpg controller here.
+// They will automatically be included in application.css.
+// You can use Sass (SCSS) here: http://sass-lang.com/
+form{
+    display: inline-block;
+    width: 20%;
+    margin: 10px;
+    height: 20%;
+    text-align: center;
+    padding: 5px;
+    border: 2px solid black; 
+
+}
+input{
+    margin:0px auto;
+
+}
+h2{
+    width: 30%;
+}
+span{
+    border: 1px solid black;
+    padding: 2px 25px;
+    
+}
+div{
+    height: 400px;
+    width: 95%;
+    border: 2px solid black;
+    overflow: auto;
+
+}
+div img{
+    width :40%;
+    border: 1px solid red;
+    height: 380px;
+    vertical-align: top;
+}
+ul{
+    list-style: none;
+    width: 50%;
+    display: inline-block;
+}
+.red{
+    color: red;
+}
+.green{
+    color: green;
+}
+form:last-child{
+    border: 0px;
+}
+button{
+    
+    padding: 5px 30px;
+}
