@@ -1,0 +1,187 @@
+
+Edward Solon 6/23/18 Ruby on rails deployment Notes/Instructions
+
+
+sudo apt-get update
+
+sudo apt-get -y upgrade
+
+gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
+
+\curl -sSL https://get.rvm.io | bash -s stable
+
+source ~/.rvm/scripts/rvm
+
+rvm requirements
+
+### Note This is optional if rvm requirements successfully installed all the dependencies.###
+rvmsudo /usr/bin/apt-get install build-essential openssl libreadline6 libreadline6-dev curl git-core zlib1g zlib1g-dev libssl-dev libyaml-dev libsqlite3-dev sqlite3 libxml2-dev libxslt-dev autoconf libc6-dev ncurses-dev automake libtool bison subversion
+###
+
+rvm install 2.3.1
+
+rvm use 2.3.1 --default
+
+rvm rubygems current      ### If it asks you to update the a more current version, you can run "rvm rubygems current --force"   ###
+
+gem install rails -v 4.2.7 --no-ri --no-rdoc
+
+gem install passenger
+
+rvmsudo passenger-install-nginx-module
+
+### Press ! to make enable/visible ; spacebar to Select
+####
+Press Enter and it will ask what language we are interested in. 
+We will select (use space bar) Ruby and Node.js. And press enter.
+This will check if we have all the required software to install Nginx for our languages. ###
+
+
+sudo apt-get install libcurl4-openssl-dev
+
+rvmsudo passenger-install-nginx-module
+
+sudo dd if=/dev/zero of=/swap bs=1M count=1024
+
+sudo mkswap /swap
+
+sudo swapon /swap
+
+####
+If you encounter a permissions error: "insecure permissions 0644, 0600 suggested" then:
+Change permissions: "sudo chmod 0600 /swap"
+Turn off swap: "sudo swapoff /swap"
+Turn it back on: "sudo swapon /swap"
+####
+
+rvmsudo passenger-install-nginx-module
+
+/etc/nginx
+
+sudo apt-get install postgresql postgresql-contrib libpq-dev
+
+
+sudo su postgres -c psql      ### was Erroring Out ????
+
+CREATE ROLE ubuntu SUPERUSER LOGIN;      ## use my Personal userid of edward not "ubuntu"
+
+\q    # close postgres
+
+sudo apt-get install nodejs
+
+sudo apt-get install git
+
+
+	       In our terminal, let's navigate to
+cd /var          and create a directory named www by running the command 
+sudo mkdir www      Then, we will navigate into the directory we just created by running 
+cd www
+
+
+#stop for github creation 
+#
+sudo git clone https://github.com/edwardjs55/????????RubyRails
+###sudo git clone https://github.com/<your_user_name>/<your_rails_project>
+
+sudo chown -R ubuntu RailProjectName			???? ubuntu
+###sudo chown -R ubuntu your_rails_project   
+
+cd xxxxRubyRails
+
+bundle install
+
+sudo touch log/development.log
+
+sudo chmod 0666 /var/www/RubyRails/log/development.log
+##sudo chmod 0666 /var/www/<your_rails_project>/log/development.log
+
+sudo vim config/database.yml
+### 
+ Set username to ubuntu
+ Remove/Comment out password field
+
+
+#### Next, let's create the databases and run our migrations.
+Only if you are using PostgreSQL, run ##
+rake db:create:all
+
+# Run 
+rake db:migrate         No matter what kind of database.
+
+
+### If you are using PostgreSQL, we can run "rails db" to see our development database in the terminal.
+Next run "\d" for the list of tables. If you are using SQLite3, you can just go to the rails console. ##
+
+
+sudo wget https://raw.github.com/JasonGiedymin/nginx-init-ubuntu/master/nginx -O /etc/init.d/nginx
+
+sudo chmod +x /etc/init.d/nginx
+
+cd /etc/init.d
+i
+
+
+## edit A file
+
+To insert in vim press "i" key
+Change line 21 to "/etc/nginx/conf/nginx.conf"
+Change line 22 to "/etc/nginx/logs/nginx.pid"
+
+
+Change line 87 to "NGINXPATH=${NGINXPATH:-/etc/nginx}"
+
+
+Now, let's save the file. Press ESC, and then :wq
+
+Let's see if it works now. Run
+
+sudo service nginx start
+
+cd /etc/nginxi
+
+sudo mkdir sites-available
+
+sudo mkdir sites-enabled
+
+cd conf
+
+sudo vi nginx.conf
+
+## Edit File
+
+Below the server section type
+
+ "include /etc/nginx/sites-enabled/*;" . 
+
+I will be writing it after line 82.
+Then escape and :wq out of the file.
+
+
+
+cd /etc/nginx/sites-available
+
+sudo touch rails.conf
+
+sudo vi rails.conf
+
+
+## edit file
+
+This will be our code: 
+server {
+      listen 80; 
+      server_name <public_ip_address>; 
+      passenger_enabled on; 
+      passenger_app_env development; 
+      root /var/www/RubyRails/public;
+      }
+Dont forget to write and quit - :wq
+
+
+sudo ln -s /etc/nginx/sites-available/rails.conf /etc/nginx/sites-enabled/rails.conf
+
+sudo service nginx restart
+
+
+
+

@@ -1,0 +1,552 @@
+
+Ruby notes Edward Solon 6/2/2018
+
+
+******************************
+Gem Files:
+ VERIFY
+
+gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw]
+gem 'pg', '~> 0.21.0'
+
+config/database.yml file
+pool: 5
+username: edward
+password: root
+
+
+NOTE: PASSWORD:digest
+Doo reload! after creating relationships/associations   idiot
+
+
+
+******************************
+
+rails new Project_Name
+rails server -b 0.0.0.0
+rails s  		# will also start the Server
+
+rails new PROJECT --database=postgresql  --skip-test-unit
+rake db:create
+
+
+
+rails generate model TABLE field:string     //Capitalized model Name,Singular
+rails g model Message content:text user  :references
+
+
+rails generate controller Products  //Capitalized, Plural
+rails generate controller <ControllerName> <methods space separated>
+
+
+rails g model Product name:string description:text
+rake db:migrate
+rails g controller Products index
+
+resources :users   //creates the 7 common routes
+rake routes
+
+rake db:migrate   , reload!
+rails console
+
+Debug: use "fail"    in method to see passed paramaters; EDD process
+
+
+
+******** GEMS ***********
+
+gem list
+gems:  bundle install   -> console
+       Hirb.enable	-> rails
+
+
+gem 'rails-footnotes', '>= 4.0.0', '<5'
+bundle install
+rails generate rails_footnotes:install
+
+TDD:
+gem install rspec
+
+
+********  Queries ***********
+
+User.update_all(count:0)
+
+user1=User.new
+user1.lastname = ""
+user1.save
+
+User.create(firsltname:"blah..."
+User.all
+User.first  (3)
+User.last
+User.find(x)
+User.order(:firstname)
+User.order(firstname: :desc)
+user.valid?  , user.errors , user.errors>full_messages
+User.findby(
+User.where(
+
+
+User.find([1..4])
+User.third.destroy
+User.where("id > 3")
+
+Owner.update_all(user_id:User.find(3))
+
+Blog.find(5).posts.select {|i| puts "#{i.user.first_name} #{i.user.last_name}"}
+             ** or .each
+Post.joins(:user).where(blog:Blog.find(5)).select('title,description,users.first_name,users.last_name')
+
+
+********************************
+
+
+********** Relationships:  *******************
+
+Dojo.first.students  => all students in firsr dojo
+Student.first.dojo  => first students Dojo
+
+
+Dojo.first.ninjas 	=> all ninja to first dojo
+Ninja.first.dojo	=> First Ninja's Dojo record
+
+Dojo.select(:name,:city).first(x)   => name,city for first Dojo
+Dojo.destroy_all		=> destroy ALL dojo records !!!!
+
+
+ActiveRecord::Base.connection.tables    # Lists the Tables
+
+
+
+
+
+
+********************************************************************
+
+
+rails Relationships
+class Student < ActiveRecord::Base
+  has_many :signups
+  has_many :courses, through: :signups
+end
+
+
+my_app/app/models/signup.rb
+class Signup < ActiveRecord::Base
+  belongs_to :student
+  belongs_to :course
+end
+
+
+my_app/app/models/course.rb
+classcopy Course < ActiveRecord::Base
+  has_many :signups
+  has_many :students, through: :signups
+end
+
+
+Now, we are able to retrieve all the courses of a specific student and all the students of a specific course.
+
+# retrieves all the courses that the first student has signed up for
+Student.first.courses
+# retrieves all the students that have signed up for the second course
+Course.second.students
+
+
+********************************
+
+<h1>Listing Books</h1>
+ 
+<table>
+  <thead>
+    <tr>
+      <th>Title</th>
+      <th>Content</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+ 
+  <tbody>
+    <% @books.each do |book| %>
+      <tr>
+        <td><%= book.title %></td>
+        <td><%= book.content %></td>
+        <td><%= link_to "Show", book %></td>
+        <td><%= link_to "Edit", edit_book_path(book) %></td>
+        <td><%= link_to "Destroy", book, method: :delete, data: { confirm: "Are you sure?" } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+ 
+<br>
+ 
+<%= link_to "New book", new_book_path %>
+
+
+***************** controller & views *******************
+
+rails generate controller <ControllerName>  Product  /Capitalizezed, plural
+
+rails generate controller <ControllerName> <methods space separated>
+
+rails g controller Says
+
+
+*********** Session ********************
+session[':id'] = ####
+
+session[':id']=nil
+session.delete(:id')   ....note:() not []
+
+If you need to clear a whole session, you can use  session.clear (or: reset_session).
+
+*******************************
+
+class UsersController < ApplicationController
+  def create
+    #adds the value in params[:id] to the :id key in session
+    session[:id] = params[:id] #we will talk about params in a bit
+  end
+  def log_out
+    #sets the session[:id] to nil, overwriting the previous value
+    session[:id] = nil
+  end
+
+
+*******************************
+
+rails g model Product name:string description:text
+rake db:migrate
+rails g controller Products index
+
+
+************ routes ***************
+resources :users   //creates the 7 common routes
+ rake routes
+
+get "products" => "products#index"
+get "products/new" => "products#new"
+post "products" => "products#create"
+get "products/:id" => "products#show"
+get "products/:id/edit" => "products#edit"
+patch "products/:id" => "products#update"
+delete "products/:id" => "products#destroy"
+
+root Get /   => xxxx#index
+
+***********************************
+<form action='/products/' method='post'>
+  <input type='text' name='product[name]' placeholder='name' />
+  <input type='text' name='product[description]' placeholder='description' />
+  <input type='submit' value='Create' />
+</form>
+
+
+
+def create
+  @product = Product.create( product_params )
+  redirect_to '/products'
+end
+
+private 
+  def product_params
+   params.require(:product).permit(:name, :description)
+  end
+
+def create
+  @product = Product.create( product_params )
+  redirect_to '/products'
+end
+def update
+  @product = Product.update( product_params )
+  redirect_to '/products'
+end
+private 
+  def product_params
+   params.require(:product).permit(:name, :description)
+  end
+
+************************************
+
+def create
+  ..
+  redirect_to photos_path
+end
+def update
+  ..
+  redirect_to edit_photo_path(params[:id])
+end
+
+*************************************
+
+<h1>Listing Users</h1>
+<table>
+  <thead>
+    <tr>
+      <td>First Name</td>
+      <td>Last Name</td>
+      <td>Email</td>
+    </tr>
+  </thead>
+  <tbody>
+  <% @users.each do |user| %>
+    <tr>
+      <td><%= user.first_name %></td>
+      <td><%= user.last_name %></td>
+      <td><%= user.email %></td>
+    </tr>
+  <% end %>  
+  </tbody>
+</table>
+
+**************************************
+
+<form action="/products" method="post">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    <input type="text" name="name">
+    <textarea name='description'></textarea>
+    <input type='submit' value='Create'>
+</form>
+
+**************************************
+
+class UsersController < ApplicationController
+  def index
+    if errors?  # this is not a built-in method. Assume that errors? returns true if something is wrong!
+      flash[:error] = "You have errors"
+      redirect_to '/users/' #pathing will be explained later
+    else
+      flash[:success] = "You did it!"
+      redirect_to '/users/'
+    end
+  end
+end
+
+
+**************************************
+
+redirect_to root_url, flash: { referral_code: 1234 }
+redirect_to root_url, notice: "You have successfully logged out."
+redirect_to root_url, alert: "You're stuck here!"
+
+**************************************
+
+
+
+*************** Scaffolding ************
+
+
+rails g scaffold User first_name:string last_name:string email:string age:integer
+
+
+
+
+***************************************
+
+def user_params
+  params.require(:user).permit(:first_name, :last_name, :email, :age)
+end
+
+
+******************  Patch *********************
+
+<form action="/blogs/<%= blog.id %>" method="post">
+    <input type="hidden" name="_method" value="patch">
+</form>
+
+****************************************
+
+************** Delete ******************
+
+<a href="/blogs/<%= blog.id %>" data-method="delete">Delete this blog!</a>
+
+*****************************************
+
+************  FLASH  ********************
+
+flash[:notice] "New User created Successfully"
+
+show.html.erb
+  <% if flash[:notice] %>
+    <div class="notice"><%= flash[:notice] %></div>
+  <% end %>
+
+Is allowed due to commonality..
+	flash.alert = "You must be logged in"
+	flash.notice = "Post successfully created"
+
+****************************************
+
+************ Error Validation  ***********************
+
+validates :name, :login, :email, presence: true
+validates :name, presence: { message: "must be given please" }
+
+validates :name, length: { minimum: 2 }
+  validates :bio, length: { maximum: 500 }
+  validates :password, length: { in: 6..20 }
+  validates :registration_number, length: { is: 6 }
+
+validates :size, inclusion: { in: %w(small medium large),
+    message: "%{value} is not a valid size" }
+
+ validates :email, confirmation: true
+
+<%= text_field :person, :email %>
+<%= text_field :person, :email_confirmation %>
+
+validates :points, numericality: true
+  validates :games_played, numericality: { only_integer: true }
+validates :age, numericality: { message: "%{value} seems wrong" }
+
+validates :email, uniqueness: true
+
+person = Person.new
+person.valid? # => false
+person.errors.messages
+ # => {:name=>["can't be blank", "is too short (minimum is 3 characters)"]}
+
+***********
+
+@user = User.create[params[:user]]                # create will automatically call validators
+
+if @user.errors.any?                              # If there are errors, do something
+
+
+
+<% if @user.errors.full_messages.any? %>
+  <% @user.errors.full_messages.each do |error_message| %>
+    <%= error_message if @user.errors.full_messages.first == error_message %> <br />
+  <% end %>
+<% end %>
+
+
+
+************************************
+
+<%= link_to 'Delete',url_for(action: :delete,id: @user.id),method: :delete, data: {confirm: "Are you sure?"} %>
+
+
+
+****************  Postgres  *********************
+
+C:\Program Files\PostgreSQL\9.3\bin  psql.exe -U postgres
+
+config.yml - username: edward   , password: root
+
+
+rails new DojoSecrets --database=postgresql --skip-test-unit
+
+rake db:create     	:creates Databases in thr Config file
+
+
+# it will open psql in your development database
+rails db
+# you can run sql queries here
+DojoSecrets_development=# \q # command to exit the shell
+
+
+
+
+
+*** postgres commands ******
+\du	- display users
+\l 	- list databases
+
+
+pg gem
+BCrypt
+
+
+User.find_by_email('o@gmail.com').try(:authenticate, 'password')
+
+
+gem 'pg' #should already be in your gemfile
+gem 'bcrypt', '~> 3.1.7' #version number might be different, use recommended version number
+group :development, :test do
+  gem 'rspec-rails'
+  gem 'factory_girl_rails'
+  gem 'capybara'
+end
+
+bundle install
+
+
+BCrypt:
+rails g model User name:string email:string password:digest
+
+FactoryGirl => factoryBots    -replace ????
+
+
+class ApplicationController < ActionController::Base
+  # ...
+  def current_user
+    User.find(session[:user_id]) if session[:user_id]
+  end
+  helper_method :current_user
+end
+
+
+
+<body>
+<% if flash[:errors] %>
+  <% flash[:errors].each do |e| %>
+    <%= e %>
+  <% end %>
+<% end %>
+<% if current_user %>
+  <form action="/sessions/<%=current_user.id%>" method="post">
+    <input type="hidden" name="authenticity_token" value="<%= form_authenticity_token %>">
+    <input type="hidden" name="_method" value="delete">
+    <input type="submit" value="Log Out">
+  </form>
+<% end %> 
+<%= yield %>
+</body>
+
+
+<h1>Welcome, <%= current_user.name %></h1>
+@secrets = current_user.secrets 
+
+
+
+rails g model Secret content:text user:references
+rails g model Like user:references secret:references  
+
+
+***************************************************
+
+class User < ActiveRecord::Base
+  # ...
+  has_many :secrets
+  has_many :likes, dependent: :destroy
+  has_many :secrets, through: :likes
+  # ...
+end
+
+class User < ActiveRecord::Base
+  # ...
+  has_many :secrets
+  has_many :likes, dependent: :destroy
+  has_many :secrets_liked, through: :likes, source: :secret
+  # ...
+end
+
+
+*************************************************
+
+<%= link_to "Delete", patient_path(@patient), :confirm => "Are you sure?", :method => :delete %>
+
+
+
+
+
+
+
+
+
+
+
+
