@@ -1,0 +1,19 @@
+
+Dallas Coding Dojo classes/
+Ruby/Rails/TDD
+
+TDD Notes  : Edward solon
+
+cd project
+rspec project_spec.rb
+
+rspec .  // runs all tests in current Dir
+
+
+output: expect( )  return_Value ( )  vs   expected_behavior { }
+Errors: expect{ }   .to raise_error(ArgumentError)  or (NoMeithodError)
+
+
+
+
+
